@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>School Bus Dashboard</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<h1>🚌 School Bus Dashboard</h1>
+
+<div id="students"></div>
+
+<script>
+const API_URL = "https://anchalss.app.n8n.cloud/webhook/student";
+
+async function loadStudents() {
+    try {
+        const response = await fetch("https://anchalss.app.n8n.cloud/webhook/student");
+
+        const students = await response.json();
+
+        const container = document.getElementById("students");
+
+        students.forEach(student => {
+
+            container.innerHTML += `
+                <div style="
+                    border:1px solid #ccc;
+                    padding:10px;
+                    margin:10px;
+                ">
+                    <h3>${student.Name}</h3>
+
+                    <p>ID: ${student.StudentID}</p>
+                    <p>Address: ${student.Address}</p>
+                    <p>Parent: ${student.ParentNumber}</p>
+                    <p>Status: ${student.Status}</p>
+
+                    <button onclick="sendAction(${student.StudentID},'pickup')">
+                        Pickup
+                    </button>
+
+                    <button onclick="sendAction(${student.StudentID},'drop')">
+                        Drop
+                    </button>
+
+                    <button onclick="sendAction(${student.StudentID},'absent')">
+                        Absent
+                    </button>
+
+                    <button onclick="sendAction(${student.StudentID},'call')">
+                        Call
+                    </button>
+                </div>
+            `;
+        });
+
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+async function sendAction(studentId, action) {
+
+    try {
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                studentId,
+                action
+            })
+        });
+
+        const data = await response.json();
+
+        alert(action + " successful");
+
+        console.log(data);
+
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+loadStudents();
+</script>
+
+</body>
+</html>
